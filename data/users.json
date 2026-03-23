@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1742000000,
+        "name": "Администратор",
+        "email": "admin@helpkids.ru",
+        "password": "admin123",
+        "role": "admin"
+    },
+    {
+        "id": 1773938198,
+        "name": "Образцова Вероника Сергеевна",
+        "email": "SangoVai@mail.ru",
+        "password": "$2y$10$ShEB3yNqwTBgk5oqA4RZnuouT.0PuKXwbgZ\/THSkFze.COoKDiX.q",
+        "role": "admin"
+    }
+]
