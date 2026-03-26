@@ -1,22 +1,36 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-$data = json_decode(file_get_contents('php://input'), true);
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
 
-$email = trim($data['email'] ?? '');
+$email    = trim($data['email'] ?? '');
 $password = $data['password'] ?? '';
 
 if (empty($email) || empty($password)) {
-    echo json_encode(['success' => false, 'message' => 'Заполните все поля']);
+    echo json_encode(['success' => false, 'message' => 'Email и пароль обязательны']);
     exit;
 }
 
 $file = '../../data/users.json';
-$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+if (!file_exists($file)) {
+    echo json_encode(['success' => false, 'message' => 'База пользователей не найдена']);
+    exit;
+}
 
-$user = array_filter($users, fn($u) => $u['email'] === $email);
-$user = reset($user);
+$users = json_decode(file_get_contents($file), true) ?: [];
+
+$user = null;
+foreach ($users as $u) {
+    if ($u['email'] === $email) {
+        $user = $u;
+        break;
+    }
+}
 
 if ($user && password_verify($password, $user['password'])) {
     $_SESSION['user_id'] = $user['id'];

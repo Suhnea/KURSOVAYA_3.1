@@ -1,28 +1,81 @@
-async function apiRequest(url, method = 'POST', body = null) {
-  const options = { method };
-  if (body) {
-    options.headers = { 'Content-Type': 'application/json' };
-    options.body = JSON.stringify(body);
-  }
-  const res = await fetch(url, options);
-  return await res.json();
-}
+// ==================== SCRIPT.JS ДЛЯ ДОБРОЖЕЛЮБНО ====================
 
-// регистрация и вход (как раньше)
-document.addEventListener('DOMContentLoaded', () => {
-  // ... (код регистрации и логина остаётся прежним)
+document.addEventListener('DOMContentLoaded', function() {
 
-  // новая функция отклика в кабинете
-  window.otkliknutisya = async function(need) {
-    const data = {
-      name: "<?php echo $_SESSION['name'] ?? 'Волонтёр'; ?>", // если нужно
-      email: "отклик@dobrozhelyubno.ru",
-      phone: "—",
-      vacancy: need,
-      message: "Хочу помочь по этой нужде",
-      status: "new"
-    };
-    const result = await apiRequest('php/api/save_application.php', 'POST', data);
-    alert(result.success ? `Спасибо! Ты откликнулся на «${need}» ❤️` : 'Ошибка');
-  };
+    console.log("✅ script.js успешно загружен");
+
+    // === РЕГИСТРАЦИЯ ===
+    const regForm = document.getElementById('register-form');
+    if (regForm) {
+        console.log("✅ Форма регистрации найдена");
+
+        regForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log("📤 Попытка регистрации...");
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            console.log("Отправляемые данные:", data);
+
+            try {
+                const response = await fetch('php/auth/register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log("Ответ от сервера:", result);
+
+                if (result.success) {
+                    alert(result.message || "Регистрация прошла успешно!");
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    alert(result.message || "Ошибка регистрации");
+                }
+            } catch (error) {
+                console.error("Ошибка при регистрации:", error);
+                alert("Ошибка соединения с сервером. Проверьте, запущен ли XAMPP.");
+            }
+        });
+    }
+
+    // === ВХОД ===
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        console.log("✅ Форма входа найдена");
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log("📤 Попытка входа...");
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('php/auth/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log("Ответ от сервера:", result);
+
+                if (result.success) {
+                    window.location.href = 'cabinet.php';
+                } else {
+                    alert(result.message || "Ошибка входа");
+                }
+            } catch (error) {
+                console.error("Ошибка при входе:", error);
+                alert("Ошибка соединения с сервером");
+            }
+        });
+    }
 });

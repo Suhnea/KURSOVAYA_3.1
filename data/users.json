@@ -5,5 +5,12 @@
         "email": "SangoVai@mail.ru",
         "password": "$2y$10$ShEB3yNqwTBgk5oqA4RZnuouT.0PuKXwbgZ\/THSkFze.COoKDiX.q",
         "role": "volunteer"
+    },
+    {
+        "id": 1774538947,
+        "name": "Степан Степанов",
+        "email": "Stepan@gmail.ru",
+        "password": "$2y$10$Mt7tLAJdKRJnfkzboEX2UuD3o5KD0GeG7ecAIOHkdbsyzntmcgawe",
+        "role": "volunteer"
     }
 ]

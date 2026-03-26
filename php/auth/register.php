@@ -1,29 +1,55 @@
 <?php
-session_start();
+// Включаем отображение ошибок для отладки (убери потом!)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Неверный метод запроса']);
+    echo json_encode(['success' => false, 'message' => 'Метод запроса должен быть POST']);
     exit;
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
 
-$name = trim(htmlspecialchars($data['name'] ?? ''));
-$email = trim(htmlspecialchars($data['email'] ?? ''));
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo json_encode(['success' => false, 'message' => 'Неверный JSON: ' . json_last_error_msg()]);
+    exit;
+}
+
+$name     = trim(htmlspecialchars($data['name'] ?? ''));
+$email    = trim(htmlspecialchars($data['email'] ?? ''));
 $password = $data['password'] ?? '';
 
-if (strlen($name) < 3 || strlen($email) < 5 || strlen($password) < 6) {
-    echo json_encode(['success' => false, 'message' => 'Заполните все поля корректно (пароль минимум 6 символов)']);
+if (empty($name) || empty($email) || empty($password)) {
+    echo json_encode(['success' => false, 'message' => 'Все поля обязательны']);
+    exit;
+}
+
+if (strlen($password) < 6) {
+    echo json_encode(['success' => false, 'message' => 'Пароль должен быть не менее 6 символов']);
     exit;
 }
 
 $file = '../../data/users.json';
-$users = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
 
-if (array_filter($users, fn($u) => $u['email'] === $email)) {
-    echo json_encode(['success' => false, 'message' => 'Этот email уже зарегистрирован']);
-    exit;
+if (!is_dir('../../data')) {
+    mkdir('../../data', 0777, true);
+}
+
+$users = [];
+if (file_exists($file)) {
+    $json = file_get_contents($file);
+    $users = json_decode($json, true) ?: [];
+}
+
+// Проверка на существующий email
+foreach ($users as $u) {
+    if ($u['email'] === $email) {
+        echo json_encode(['success' => false, 'message' => 'Этот email уже зарегистрирован']);
+        exit;
+    }
 }
 
 $newUser = [
@@ -35,7 +61,10 @@ $newUser = [
 ];
 
 $users[] = $newUser;
-file_put_contents($file, json_encode($users, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
-echo json_encode(['success' => true, 'message' => 'Регистрация прошла успешно! Теперь вы можете войти.']);
+if (file_put_contents($file, json_encode($users, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
+    echo json_encode(['success' => true, 'message' => 'Регистрация прошла успешно! Теперь войдите в кабинет.']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Не удалось сохранить данные. Проверьте права на папку data/']);
+}
 ?>
