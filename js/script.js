@@ -1,81 +1,73 @@
-// ==================== SCRIPT.JS ДЛЯ ДОБРОЖЕЛЮБНО ====================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("✅ script.js загружен");
 
-document.addEventListener('DOMContentLoaded', function() {
-
-    console.log("✅ script.js успешно загружен");
-
-    // === РЕГИСТРАЦИЯ ===
+    // Регистрация
     const regForm = document.getElementById('register-form');
     if (regForm) {
-        console.log("✅ Форма регистрации найдена");
-
-        regForm.addEventListener('submit', async function(e) {
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log("📤 Попытка регистрации...");
+            const data = Object.fromEntries(new FormData(regForm));
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
+            const res = await fetch('php/auth/register.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
 
-            console.log("Отправляемые данные:", data);
-
-            try {
-                const response = await fetch('php/auth/register.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                console.log("Ответ от сервера:", result);
-
-                if (result.success) {
-                    alert(result.message || "Регистрация прошла успешно!");
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 1500);
-                } else {
-                    alert(result.message || "Ошибка регистрации");
-                }
-            } catch (error) {
-                console.error("Ошибка при регистрации:", error);
-                alert("Ошибка соединения с сервером. Проверьте, запущен ли XAMPP.");
+            if (result.success) {
+                alert(result.message);
+                window.location.href = 'login.html';
+            } else {
+                alert(result.message);
             }
         });
     }
 
-    // === ВХОД ===
+    // Вход
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        console.log("✅ Форма входа найдена");
-
-        loginForm.addEventListener('submit', async function(e) {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log("📤 Попытка входа...");
+            const data = Object.fromEntries(new FormData(loginForm));
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
+            const res = await fetch('php/auth/login.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
 
-            try {
-                const response = await fetch('php/auth/login.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                console.log("Ответ от сервера:", result);
-
-                if (result.success) {
-                    window.location.href = 'cabinet.php';
-                } else {
-                    alert(result.message || "Ошибка входа");
-                }
-            } catch (error) {
-                console.error("Ошибка при входе:", error);
-                alert("Ошибка соединения с сервером");
+            if (result.success) {
+                window.location.href = 'cabinet.php';
+            } else {
+                alert(result.message);
             }
         });
     }
 });
+
+// Отклик на нужду
+async function otkliknutisya(need) {
+    const data = {
+        name: "Волонтёр",
+        email: "volunteer@dobrozhelyubno.ru",
+        phone: "—",
+        vacancy: need,
+        message: "Хочу помочь",
+        status: "new"
+    };
+
+    const res = await fetch('php/api/save_application.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const result = await res.json();
+
+    if (result.success) {
+        alert(`Спасибо! Ты откликнулся на «${need}» ❤️`);
+    } else {
+        alert("Ошибка: " + (result.message || "Неизвестная ошибка"));
+    }
+}
