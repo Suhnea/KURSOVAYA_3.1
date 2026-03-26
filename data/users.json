@@ -1,16 +1,23 @@
 [
     {
-        "id": 1773938198,
-        "name": "Образцова Вероника Сергеевна",
-        "email": "SangoVai@mail.ru",
-        "password": "$2y$10$ShEB3yNqwTBgk5oqA4RZnuouT.0PuKXwbgZ\/THSkFze.COoKDiX.q",
-        "role": "volunteer"
-    },
-    {
         "id": 1774538947,
         "name": "Степан Степанов",
         "email": "Stepan@gmail.ru",
         "password": "$2y$10$Mt7tLAJdKRJnfkzboEX2UuD3o5KD0GeG7ecAIOHkdbsyzntmcgawe",
+        "role": "volunteer"
+    },
+    {
+        "id": 1774542974,
+        "name": "Алёна Алёнова",
+        "email": "AleAle@mail.ru",
+        "password": "$2y$10$dQHm.\/Oe7Q\/XyfAlbXTMRurshC9OJ2z2lxUmd3Ok7kPZThlzNrN26",
+        "role": "volunteer"
+    },
+    {
+        "id": 1774543326,
+        "name": "Вероника Батьковна",
+        "email": "HeySlay@slay.ru",
+        "password": "$2y$10$jYWsOOoIxD97Wk8i7V7KzO\/jJc76BMSi4l5tMsVnTQiiPczQn3koi",
         "role": "volunteer"
     }
 ]
